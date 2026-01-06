@@ -1,4 +1,4 @@
-import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
+import { ProxyConfig, NextRequest, NextResponse } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
 interface JwtPayload {
@@ -14,7 +14,7 @@ const publicRoutes = [
 
 const REDIRECT_URL_WHEN_UNAUTHORIZED = "/login";
 
-export const middleware = (req: NextRequest) => {
+export const proxy = (req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const publicRoute = publicRoutes.find(route => route.path === pathname);
 
@@ -68,7 +68,7 @@ export const middleware = (req: NextRequest) => {
   return NextResponse.next();
 };
 
-export const config: MiddlewareConfig = {
+export const config: ProxyConfig = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
