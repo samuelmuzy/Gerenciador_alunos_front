@@ -10,6 +10,8 @@ const publicRoutes = [
   { path: "/signup-professor", whenAuthorized: "redirect" },
   { path: "/signin-professor", whenAuthorized: "redirect" },
   { path: "/signin-student", whenAuthorized: "redirect" },
+  { path: "/", whenAuthorized: "redirect" },
+  { path: "/login", whenAuthorized: "redirect" },
 ] as const;
 
 const REDIRECT_URL_WHEN_UNAUTHORIZED = "/login";
