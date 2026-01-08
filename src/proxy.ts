@@ -21,6 +21,7 @@ export const proxy = (req: NextRequest) => {
   const publicRoute = publicRoutes.find(route => route.path === pathname);
 
   const token = req.cookies.get("token")?.value;
+  console.log(token);
   const isAuthenticated = !!token;
 
   //Rota pública e não autenticado → OK 

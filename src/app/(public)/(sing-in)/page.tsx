@@ -37,7 +37,7 @@ const SingIn = () => {
                 // Login bem-sucedido
                 console.log('Login successful:', data);
                 // Redireciona para uma página protegida, por exemplo
-                router.push('/dashboard');
+                //router.push('/dashboard');
             } else {
                 // Login falhou
                 setError(data.message || 'Login failed');
@@ -61,10 +61,10 @@ const SingIn = () => {
                 )}
             </div>
             <div>
-                <input placeholder="Senha" type="password" {...register("password")} />
-                {errors?.password && (
+                <input placeholder="Senha" type="password" {...register("senha")} />
+                {errors?.senha && (
                     <div className="text-red-500 text-xs">
-                        {errors?.password?.message}
+                        {errors?.senha?.message}
                     </div>
                 )}
             </div>
