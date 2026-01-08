@@ -1,4 +1,5 @@
-import { signUpFormSchema, SignUpFormSchema } from "@/src/app/_schemas/sing-in-schema";
+import { SignInFormSchema, signInFormSchema,  } from "@/src/app/_schemas/sing-in-schema";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,14 +15,14 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType 
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<SignUpFormSchema>({
-        resolver: zodResolver(signUpFormSchema),
+    } = useForm<SignInFormSchema>({
+        resolver: zodResolver(signInFormSchema),
     });
 
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const onSubmit = async (payload: SignUpFormSchema) => {
+    const onSubmit = async (payload: SignInFormSchema) => {
         setError(null);
 
         try {

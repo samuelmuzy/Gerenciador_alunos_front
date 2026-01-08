@@ -1,7 +1,7 @@
 export async function POST(req: Request) {
     const body = await req.json();
   
-    const res = await fetch(`${process.env.API_URL}/auth/singin`, {
+    const res = await fetch(`${process.env.API_URL}/auth/singup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'
 import {useForm} from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpFormSchema, SignUpFormSchema } from '@/src/app/_schemas/sing-in-schema';
+import { signInFormSchema, SignInFormSchema } from '@/src/app/_schemas/sing-in-schema';
+
 
 interface SingInFormProfessorProps {
     onToggleUserType: (userType: 'professor' | 'student') => void;
@@ -15,14 +16,14 @@ const SingInFormProfessor: React.FC<SingInFormProfessorProps> = ({ onToggleUserT
 		register,
 		handleSubmit,
 		formState: {errors},
-	} = useForm<SignUpFormSchema>({
-		resolver: zodResolver(signUpFormSchema),
+	} = useForm<SignInFormSchema>({
+		resolver: zodResolver(signInFormSchema),
 	});
     
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const onSubmit = async (payload: SignUpFormSchema) => {
+    const onSubmit = async (payload: SignInFormSchema) => {
         setError(null);
 
         try {

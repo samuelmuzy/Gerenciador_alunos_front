@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-export const signUpFormSchema = z
+export const signInFormSchema = z
   .object({
     email: z.email({message: "Email inválido"}).max(255),
     senha: z
@@ -9,4 +9,4 @@ export const signUpFormSchema = z
       .max(255),
     
   })
-export type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
+export type SignInFormSchema = z.infer<typeof signInFormSchema>;
