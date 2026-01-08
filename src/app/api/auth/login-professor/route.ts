@@ -15,7 +15,6 @@ export async function POST(req: Request) {
    return Response.json(data, {
     status: res.status,
     headers: {
-      // MUITO IMPORTANTE
       "Set-Cookie": res.headers.get("set-cookie") ?? "",
     },
   });
