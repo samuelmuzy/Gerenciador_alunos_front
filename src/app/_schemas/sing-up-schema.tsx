@@ -2,12 +2,12 @@ import * as z from 'zod'
 
  
 export const signUpFormSchema = z.object({
-  name: z
+  nome: z
     .string()
     .min(2, { error: 'Name must be at least 2 characters long.' })
     .trim(),
   email: z.email({ error: 'Please enter a valid email.' }).trim(),
-  password: z
+  senha: z
     .string()
     .min(8, { error: 'Be at least 8 characters long' })
     .regex(/[a-zA-Z]/, { error: 'Contain at least one letter.' })

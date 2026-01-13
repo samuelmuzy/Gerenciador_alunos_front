@@ -6,7 +6,7 @@ interface JwtPayload {
 }
 
 const publicRoutes = [
-  { path: "/signup-student", whenAuthorized: "redirect" },
+  { path: "/register-student", whenAuthorized: "redirect" },
   { path: "/signup-professor", whenAuthorized: "redirect" },
   { path: "/signin-professor", whenAuthorized: "redirect" },
   { path: "/signin-student", whenAuthorized: "redirect" },

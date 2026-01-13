@@ -103,7 +103,7 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType 
                     </button>
                     <button
                         type="button"
-                        onClick={() => router.push('/register')}
+                        onClick={() => router.push('/register-student')}
                         className="text-blue-600 hover:underline mx-2"
                     >
                         Registrar
