@@ -1,4 +1,5 @@
-import { SignInFormSchema, signInFormSchema,  } from "@/src/app/_schemas/sing-in-schema";
+import { SignInFormSchema, signInFormSchema, } from "@/src/app/_schemas/sing-in-schema";
+import { useAuth } from "@/src/hooks/useAuth";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -20,33 +21,15 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType 
     });
 
     const [error, setError] = useState<string | null>(null);
+    const { signInStudent } = useAuth();
     const router = useRouter();
 
     const onSubmit = async (payload: SignInFormSchema) => {
         setError(null);
 
         try {
-            // Fazendo a requisição POST para o seu Route Handler
-            const response = await fetch('/api/auth/login-student', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Login bem-sucedido
-                console.log('Login successful:', data);
-                // Redireciona para uma página protegida, por exemplo
-                //router.push('/dashboard');
-            } else {
-                // Login falhou
-                setError(data.message || 'Login failed');
-                console.error('Login failed:', data);
-            }
+            await signInStudent(payload);
+            //router.push('/');
         } catch (err) {
             console.error('Network or server error:', err);
             setError('An unexpected error occurred.');
@@ -99,7 +82,7 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType 
                         onClick={() => onToggleUserType('professor')}
                         className="text-blue-600 hover:underline mx-2"
                     >
-                        Sou Professor 
+                        Sou Professor
                     </button>
                     <button
                         type="button"

@@ -1,9 +1,10 @@
 'use client'
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'
-import {useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInFormSchema, SignInFormSchema } from '@/src/app/_schemas/sing-in-schema';
+import { useAuth } from '@/src/hooks/useAuth';
 
 
 interface SingInFormProfessorProps {
@@ -13,41 +14,24 @@ interface SingInFormProfessorProps {
 const SingInFormProfessor: React.FC<SingInFormProfessorProps> = ({ onToggleUserType }) => {
 
     const {
-		register,
-		handleSubmit,
-		formState: {errors},
-	} = useForm<SignInFormSchema>({
-		resolver: zodResolver(signInFormSchema),
-	});
-    
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignInFormSchema>({
+        resolver: zodResolver(signInFormSchema),
+    });
+
     const [error, setError] = useState<string | null>(null);
+    const { signInProfessor } = useAuth();
     const router = useRouter();
 
     const onSubmit = async (payload: SignInFormSchema) => {
         setError(null);
 
         try {
-            // Fazendo a requisição POST para o seu Route Handler
-            const response = await fetch('/api/auth/login-professor', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Login bem-sucedido
-                console.log('Login successful:', data);
-                // Redireciona para uma página protegida, por exemplo
-                //router.push('/dashboard');
-            } else {
-                // Login falhou
-                setError(data.message || 'Login failed');
-                console.error('Login failed:', data);
-            }
+            await signInProfessor(payload);
+            router.push('/portal-professor');
+            
         } catch (err) {
             console.error('Network or server error:', err);
             setError('An unexpected error occurred.');
@@ -63,48 +47,48 @@ const SingInFormProfessor: React.FC<SingInFormProfessorProps> = ({ onToggleUserT
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
-            <div>
-                <input
-                    placeholder="Email"
-                    type="email"
-                    {...register("email")}
-                    className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors?.email && (
-                    <div className="text-red-500 text-xs">{errors?.email?.message}</div>
-                )}
-            </div>
-            <div>
-                <input
-                    placeholder="Senha"
-                    type="password"
-                    {...register("senha")}
-                    className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors?.senha && (
-                    <div className="text-red-500 text-xs">
-                        {errors?.senha?.message}
+                    <div>
+                        <input
+                            placeholder="Email"
+                            type="email"
+                            {...register("email")}
+                            className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors?.email && (
+                            <div className="text-red-500 text-xs">{errors?.email?.message}</div>
+                        )}
                     </div>
-                )}
+                    <div>
+                        <input
+                            placeholder="Senha"
+                            type="password"
+                            {...register("senha")}
+                            className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors?.senha && (
+                            <div className="text-red-500 text-xs">
+                                {errors?.senha?.message}
+                            </div>
+                        )}
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                    >Logar</button>
+                    {error && <div className="text-red-500 text-sm mt-4 text-center">{error}</div>}
+                </form>
+                <div className="mt-4 text-center">
+                    <button
+                        type="button"
+                        onClick={() => onToggleUserType('student')}
+                        className="text-blue-600 hover:underline mx-2"
+                    >
+                        Sou Aluno
+                    </button>
+                </div>
             </div>
-            <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >Logar</button>
-            {error && <div className="text-red-500 text-sm mt-4 text-center">{error}</div>}
-        </form>
-        <div className="mt-4 text-center">
-            <button
-                type="button"
-                onClick={() => onToggleUserType('student')}
-                className="text-blue-600 hover:underline mx-2"
-            >
-                Sou Aluno
-            </button>
         </div>
-            </div>
-        </div>
-        
+
     )
 }
 
