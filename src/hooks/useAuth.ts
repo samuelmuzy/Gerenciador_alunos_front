@@ -1,4 +1,4 @@
-import { SignInFormSchema } from "../app/_schemas/sing-in-schema"
+import { SignInFormSchema } from "../app/schemas/sing-in-schema"
 import { useAuthStore } from "../stores/auth.store"
 
 export function useAuth() {

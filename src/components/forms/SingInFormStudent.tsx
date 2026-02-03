@@ -1,4 +1,4 @@
-import { SignInFormSchema, signInFormSchema, } from "@/src/app/_schemas/sing-in-schema";
+import { SignInFormSchema, signInFormSchema, } from "@/src/app/schemas/sing-in-schema";
 import { useAuth } from "@/src/hooks/useAuth";
 
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -1,70 +1,39 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { CreateClassSchema, createClassSchema } from '@/src/app/schemas/create-class-schema'
+import { Periodus } from '@/src/types/Periodus'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState, useEffect, useCallback } from 'react'
+import { useForm } from 'react-hook-form'
 
-export type Periodo = {
-  id: string
-  nome: string
-  descricao: string
-  nota_corte: number
-}
 
-type ModalCriarTurmaProps = {
+type ModalCreateClassProps = {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
 }
 
-export function ModalCriarTurma({ isOpen, onClose, onSuccess }: ModalCriarTurmaProps) {
-  const [nome, setNome] = useState('')
-  const [idPeriodo, setIdPeriodo] = useState('')
-  const [periodos, setPeriodos] = useState<Periodo[]>([])
+export function ModalCreateClass({ isOpen, onClose, onSuccess }: ModalCreateClassProps) {
+  const [periods, setPeriods] = useState<Periodus[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingPeriodos, setLoadingPeriodos] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (isOpen) {
-      setError(null)
-      setNome('')
-      setIdPeriodo('')
-      setLoadingPeriodos(true)
-      fetch('/api/periodos')
-        .then((res) => res.json())
-        .then((data) => {
-          const list = Array.isArray(data) ? data : []
-          setPeriodos(list)
-          if (list.length > 0) {
-            setIdPeriodo(list[0].id)
-          }
-        })
-        .catch(() => setPeriodos([]))
-        .finally(() => setLoadingPeriodos(false))
-    }
-  }, [isOpen])
+  const { register, handleSubmit, formState: { errors } } = useForm<CreateClassSchema>({
+    resolver: zodResolver(createClassSchema),
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    if (!nome.trim()) {
-      setError('Informe o nome da turma.')
-      return
-    }
-    if (!idPeriodo) {
-      setError('Selecione um período.')
-      return
-    }
-    setLoading(true)
+  const onSubmit = async (data: CreateClassSchema) => {
     try {
       const res = await fetch('/api/turmas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome: nome.trim(), id_periodo: idPeriodo }),
+        body: JSON.stringify(data),
         credentials: 'include',
       })
-      const data = await res.json()
+      const response = await res.json()
       if (!res.ok) {
-        throw new Error(data.message || 'Erro ao criar turma')
+        throw new Error(response.message || 'Erro ao criar turma')
       }
       onSuccess()
       onClose()
@@ -74,6 +43,30 @@ export function ModalCriarTurma({ isOpen, onClose, onSuccess }: ModalCriarTurmaP
       setLoading(false)
     }
   }
+
+  const fetchPeriodos = useCallback(async () => {
+    if (isOpen) {
+      try {
+        setError(null)
+        setLoadingPeriodos(true)
+
+        const data = await fetch('/api/periodos')
+        const list = await data.json()
+        setPeriods(list)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar períodos')
+      } finally {
+        setLoadingPeriodos(false)
+      }
+    }
+  }, [isOpen])
+
+
+  useEffect(() => {
+    fetchPeriodos()
+  }, [fetchPeriodos])
+
+
 
   if (!isOpen) return null
 
@@ -105,7 +98,7 @@ export function ModalCriarTurma({ isOpen, onClose, onSuccess }: ModalCriarTurmaP
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6">
           <div className="space-y-4">
             <div>
               <label htmlFor="turma-nome" className="mb-1 block text-sm font-medium text-slate-700">
@@ -114,8 +107,7 @@ export function ModalCriarTurma({ isOpen, onClose, onSuccess }: ModalCriarTurmaP
               <input
                 id="turma-nome"
                 type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                {...register('nome')}
                 placeholder="Ex: 1º Ano A"
                 className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 autoFocus
@@ -127,29 +119,33 @@ export function ModalCriarTurma({ isOpen, onClose, onSuccess }: ModalCriarTurmaP
               </label>
               <select
                 id="turma-periodo"
-                value={idPeriodo}
-                onChange={(e) => setIdPeriodo(e.target.value)}
+                {...register('id_periodo')}
                 disabled={loadingPeriodos}
                 className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-100"
               >
                 {loadingPeriodos ? (
                   <option value="">Carregando...</option>
-                ) : periodos.length === 0 ? (
+                ) : periods.length === 0 ? (
                   <option value="">Nenhum período cadastrado</option>
                 ) : (
-                  periodos.map((p) => (
+                  periods.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.nome}
                     </option>
                   ))
                 )}
               </select>
+              {errors.id_periodo && (
+                <p className="mt-1 text-sm text-red-600" role="alert">
+                  {errors.id_periodo.message}
+                </p>
+              )}
             </div>
           </div>
 
           {error && (
             <p className="mt-4 text-sm text-red-600" role="alert">
-              {error}
+              {errors.nome?.message || errors.id_periodo?.message || error}
             </p>
           )}
 

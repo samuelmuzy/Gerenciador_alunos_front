@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signInFormSchema, SignInFormSchema } from '@/src/app/_schemas/sing-in-schema';
+import { signInFormSchema, SignInFormSchema } from '@/src/app/schemas/sing-in-schema';
 import { useAuth } from '@/src/hooks/useAuth';
 
 

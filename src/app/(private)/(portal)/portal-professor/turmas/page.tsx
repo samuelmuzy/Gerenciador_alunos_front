@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { ModalCriarTurma } from '@/src/components/modals/ModalCriarTurma'
+import { ModalCreateClass } from '@/src/components/modals/ModalCreateClass'
 
 type Periodo = {
   id: string
@@ -21,7 +21,7 @@ export default function TurmasPage() {
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const fetchTurmas = useCallback(async () => {
+  const fetchClasses = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/turmas', { credentials: 'include' })
@@ -39,8 +39,8 @@ export default function TurmasPage() {
   }, [])
 
   useEffect(() => {
-    fetchTurmas()
-  }, [fetchTurmas])
+    fetchClasses()
+  }, [fetchClasses])
 
   return (
     <div className="px-4 py-8 sm:px-6 lg:px-8">
@@ -117,10 +117,10 @@ export default function TurmasPage() {
         </div>
       </div>
 
-      <ModalCriarTurma
+      <ModalCreateClass
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={fetchTurmas}
+        onSuccess={fetchClasses}
       />
     </div>
   )
