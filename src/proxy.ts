@@ -14,13 +14,14 @@ const publicRoutes = [
   { path: "/login", whenAuthorized: "redirect" },
 ] as const;
 
-const REDIRECT_URL_WHEN_UNAUTHORIZED = "/login";
+const REDIRECT_URL_WHEN_UNAUTHORIZED = "/";
 
 export const proxy = (req: NextRequest) => {
   const { pathname } = req.nextUrl;
   const publicRoute = publicRoutes.find(route => route.path === pathname);
 
   const token = req.cookies.get("token")?.value;
+  
   const isAuthenticated = !!token;
 
   //Rota pública e não autenticado → OK 

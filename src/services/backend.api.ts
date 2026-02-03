@@ -4,13 +4,13 @@ export async function backendFetch(
   path: string,
   options?: RequestInit
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   const res = await fetch(`${process.env.API_URL}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      cookie: cookieStore.toString(), // repassa cookies
+      cookie: cookieStore.toString(),
       ...(options?.headers || {}),
     },
     credentials: "include",

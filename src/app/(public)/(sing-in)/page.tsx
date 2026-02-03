@@ -1,6 +1,6 @@
 'use client'
-import SingInFormProfessor from '@/src/components/ui/SingInFormProfessor';
-import SingInFormStudent from '@/src/components/ui/SingInFormStudent';
+import SingInFormProfessor from '@/src/components/forms/SingInFormProfessor';
+import SingInFormStudent from '@/src/components/forms/SingInFormStudent';
 import { useState } from 'react';
 
 const SingIn = () => {

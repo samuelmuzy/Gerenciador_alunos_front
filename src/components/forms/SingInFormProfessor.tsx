@@ -31,7 +31,7 @@ const SingInFormProfessor: React.FC<SingInFormProfessorProps> = ({ onToggleUserT
         try {
             await signInProfessor(payload);
             router.push('/portal-professor');
-            
+
         } catch (err) {
             console.error('Network or server error:', err);
             setError('An unexpected error occurred.');
