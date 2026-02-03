@@ -25,7 +25,7 @@ export function ModalCreateClass({ isOpen, onClose, onSuccess }: ModalCreateClas
 
   const onSubmit = async (data: CreateClassSchema) => {
     try {
-      const res = await fetch('/api/turmas', {
+      const res = await fetch('/api/student-class', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

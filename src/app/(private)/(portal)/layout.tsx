@@ -12,7 +12,7 @@ export default function PortalProfessorLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex min-h-[calc(100vh-4rem)] h-full bg-white">
       <SideBarPortalProfessor />
       <main className="flex-1 overflow-auto bg-slate-50">
         {children}

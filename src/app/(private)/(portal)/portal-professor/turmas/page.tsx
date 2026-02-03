@@ -1,38 +1,23 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { ModalCreateClass } from '@/src/components/modals/ModalCreateClass'
-
-type Periodo = {
-  id: string
-  nome: string
-  descricao: string
-  nota_corte: number
-}
-
-type Turma = {
-  id: string
-  nome: string
-  id_periodo: string
-  periodo?: Periodo
-}
+import { ClassStudent } from '@/src/types/Class-student'
 
 export default function TurmasPage() {
-  const [turmas, setTurmas] = useState<Turma[]>([])
+  const [turmas, setTurmas] = useState<ClassStudent[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
 
   const fetchClasses = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/turmas', { credentials: 'include' })
+      const res = await fetch('/api/student-class', { credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
-        setTurmas(Array.isArray(data) ? data : [])
-      } else {
-        setTurmas([])
+        setTurmas(data)
       }
-    } catch {
-      setTurmas([])
+    } catch (error) {
+      console.error('Erro ao buscar turmas:', error)
     } finally {
       setLoading(false)
     }

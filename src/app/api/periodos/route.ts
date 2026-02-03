@@ -8,3 +8,19 @@ export async function GET() {
     return Response.json([], { status: 200 });
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const data = await backendFetch("/periodus", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    return Response.json(data);
+  } catch (error) {
+    return Response.json(
+      { message: "Erro ao criar período." },
+      { status: 502 }
+    );
+  }
+}
