@@ -14,14 +14,14 @@ export default function PeriodosPage() {
   const [showForm, setShowForm] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Adicione esta função no início do componente
+  
   const toISODateTime = (dateString: string): string => {
     return new Date(dateString).toISOString()
   }
 
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue, getValues } = useForm<CreatePeriodusRegularSchema>({
     resolver: zodResolver(createPeriodusRegularSchema),
-    defaultValues: { quantidade_etapas: 1 },
+    defaultValues: { quantidade_etapas: 1, nota_maxima: 0, },
   })
 
   const quantidadeEtapas = watch('quantidade_etapas') ?? 1
@@ -35,7 +35,7 @@ export default function PeriodosPage() {
       'etapas',
       Array.from({ length: quantidadeEtapas }, (_, i) => ({
         id_periodo: '',
-        nota_maxima_etapa: 12,
+        nota_maxima_etapa: prev[i]?.nota_maxima_etapa ?? 0,
         data_inicio: prev[i]?.data_inicio ?? '',
         data_fim: prev[i]?.data_fim ?? '',
       }))
@@ -116,13 +116,16 @@ export default function PeriodosPage() {
         quantidadeEtapas < 2
           ? [{
             id_periodo: periodo.id,
-            nota_maxima_etapa: 12,
+            nota_maxima_etapa: data.nota_maxima ?? 100,
             data_inicio: toISODateTime(data.data_inicio),
             data_fim: toISODateTime(data.data_fim),
           }]
           : data.etapas!.map(etapa => ({
-            ...etapa,
             id_periodo: periodo.id,
+            nota_maxima_etapa: etapa.nota_maxima_etapa,
+            data_fim: toISODateTime(etapa.data_fim),
+            data_inicio: toISODateTime(etapa.data_inicio),
+
           }))
 
       await createStep({ ...data, etapas })
@@ -220,10 +223,25 @@ export default function PeriodosPage() {
               />
             </div>
 
+            {!mostrarEtapas && (
+              <div>
+                <label htmlFor="quantidade-nota-maxima" className="mb-1 block text-sm text-slate-600">Nota Maxima</label>
+                <input
+                  id="nota-maxima"
+                  type="number"
+                  min={1}
+                  max={100}
+                  {...register(`nota_maxima`, { valueAsNumber: true })}
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+            )}
+
             {mostrarEtapas && (
               <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
                 <p className="text-sm font-medium text-slate-700">Datas de cada etapa</p>
                 <p className="text-xs text-slate-500">Defina a data de início e fim de cada etapa. A última etapa termina na data fim do período.</p>
+
                 {Array.from({ length: quantidadeEtapas }, (_, i) => (
                   <div key={i} className="grid grid-cols-2 gap-4 rounded border border-slate-100 bg-slate-50/50 p-3">
                     <p className="col-span-2 text-sm font-medium text-slate-600">Etapa {i + 1}</p>
@@ -245,6 +263,17 @@ export default function PeriodosPage() {
                         className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                       />
                     </div>
+                    <div>
+                      <label htmlFor="quantidade-nota-maxima" className="mb-1 block text-sm text-slate-600">Nota Maxima</label>
+                      <input
+                        id="nota-maxima"
+                        type="number"
+                        min={1}
+                        max={100}
+                        {...register(`etapas.${i}.nota_maxima_etapa`, { valueAsNumber: true })}
+                        className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -264,14 +293,24 @@ export default function PeriodosPage() {
             </div>
           </div>
 
-          {(errors.nome || errors.descricao || errors.data_inicio || errors.data_fim || errors.quantidade_etapas || errors.nota_corte || errors.etapas) && (
-            <p className="mt-4 text-sm text-red-600" role="alert">
-              {errors.etapas?.message ?? "Preencha todos os campos do período letivo."}
-            </p>
+
+          {Object.keys(errors).length > 0 && (
+            <div className="mt-4 space-y-1">
+              {errors.nome && <p className="text-sm text-red-600">{errors.nome.message}</p>}
+              {errors.descricao && <p className="text-sm text-red-600">{errors.descricao.message}</p>}
+              {errors.data_inicio && <p className="text-sm text-red-600">{errors.data_inicio.message}</p>}
+              {errors.data_fim && <p className="text-sm text-red-600">{errors.data_fim.message}</p>}
+              {errors.quantidade_etapas && <p className="text-sm text-red-600">{errors.quantidade_etapas.message}</p>}
+              {errors.nota_maxima && <p className="text-sm text-red-600">{errors.nota_maxima.message}</p>}
+              {errors.nota_corte && <p className="text-sm text-red-600">{errors.nota_corte.message}</p>}
+              {errors.etapas && <p className="text-sm text-red-600">{errors.etapas.message}</p>}
+            </div>
           )}
+
           {error && (
             <p className="mt-4 text-sm text-red-600" role="alert">{error}</p>
           )}
+
           <div className="mt-4 flex items-center gap-3">
             <button
               type="submit"
