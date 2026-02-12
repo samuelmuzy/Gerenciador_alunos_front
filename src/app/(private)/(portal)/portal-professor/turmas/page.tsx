@@ -2,11 +2,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ModalCreateClass } from '@/src/components/modals/ModalCreateClass'
 import { ClassStudent } from '@/src/types/Class-student'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function TurmasPage() {
   const [turmas, setTurmas] = useState<ClassStudent[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+
+  const router = useRouter();
 
   const fetchClasses = useCallback(async () => {
     setLoading(true)
@@ -93,6 +97,9 @@ export default function TurmasPage() {
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
                       {turma.periodo?.nome ?? turma.id_periodo}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                      <Link href={`/portal-professor/turmas/${turma.id}`} className='mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700'>Gerenciar Turma</Link>
                     </td>
                   </tr>
                 ))}
