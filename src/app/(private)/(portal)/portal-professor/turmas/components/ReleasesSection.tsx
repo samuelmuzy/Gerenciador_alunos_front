@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/src/components/ui/card"
 import { GraduationCap, BookOpen, FileText } from "lucide-react"
 const lancamentosMock = [
     {
