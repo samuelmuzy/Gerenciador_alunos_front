@@ -1,6 +1,7 @@
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Layers } from "lucide-react";
 import { StudentCard } from "../components/StudentCard";
 import { ReleasesSection } from "../components/ReleasesSection";
+import { StepCard } from "../components/StepCard";
 
 
 export default async function TurmaPage({
@@ -26,6 +27,22 @@ export default async function TurmaPage({
         },
     ]
 
+    const etapasMock = [
+        {
+          id: 1,
+          nome: "1ª Etapa",
+          periodo: "Fevereiro - Abril",
+          conteudos: ["Introdução à disciplina", "Fundamentos teóricos"],
+          trabalhos: ["Trabalho 1", "Lista de Exercícios"],
+        },
+        {
+          id: 2,
+          nome: "2ª Etapa",
+          periodo: "Maio - Julho",
+          conteudos: ["Projeto prático", "Revisão geral"],
+          trabalhos: ["Projeto Final"],
+        },
+      ]
 
     return (
         <div className="min-h-screen bg-linear-to-br from-white to-purple-50 p-10">
@@ -44,8 +61,21 @@ export default async function TurmaPage({
                     ))}
                 </div>
 
+                {/* Etapas do Período Letivo */}
+                <section className="space-y-6">
+                    <div className="flex items-center gap-2">
+                        <Layers className="text-purple-600" />
+                        <h2 className="text-2xl font-semibold text-purple-700">
+                            Etapas do Período Letivo
+                        </h2>
+                    </div>
 
-                <ReleasesSection />
+                    <div className="grid md:grid-cols-1 gap-6">
+                        {etapasMock.map((etapa) => (
+                            <StepCard key={etapa.id} etapa={etapa} />
+                        ))}
+                    </div>
+                </section>
             </div>
         </div>
     )
