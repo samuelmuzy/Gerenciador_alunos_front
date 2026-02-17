@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/src/components/ui/card";
@@ -7,16 +7,50 @@ import { Badge } from "@/src/components/ui/badge";
 import { Link as LinkIcon, Copy, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/src/components/ui/input";
+import { useAuthStore } from "@/src/stores/auth.store";
 
-export default function CreateInviteLinkCard() {
+interface CreateInviteLinkCardProps {
+  idClass: string;
+}
+
+export default function CreateInviteLinkCard({ idClass }: CreateInviteLinkCardProps) {
   const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [error,setError] = useState('');
 
-  const generateFakeLink = () => {
-    const token = Math.random().toString(36).substring(2, 12);
-    const newLink = `https://seusistema.com/convite?token=${token}`;
-    setInviteLink(newLink);
-    setIsCopied(false);
+  const { user } = useAuthStore();
+
+
+
+  const generateLink = async () => {
+    console.log(user);
+    if(!user?.id){
+      throw new Error("Usuário não definido")
+    }
+
+    try {
+      const data = {
+          idClass: idClass,
+          idProfessor:user.id
+      }
+      const res = await fetch(`/api/student-class/generate-invite-link`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      })
+
+      const result = await res.json()
+
+      if (!res.ok) throw new Error(result.message || 'Erro ao gerar link.')
+
+
+      setInviteLink(result.link);
+      setIsCopied(false);
+    } catch (error) {
+      console.log(error)
+      setError(error instanceof Error ? error.message : 'Erro ao gerar link.')
+    }
   };
 
   const copyLink = async () => {
@@ -51,7 +85,7 @@ export default function CreateInviteLinkCard() {
         <CardContent className="space-y-4">
           {!inviteLink && (
             <Button
-              onClick={generateFakeLink}
+              onClick={generateLink}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-2xl"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -78,7 +112,7 @@ export default function CreateInviteLinkCard() {
 
                 <Button
                   variant="outline"
-                  onClick={generateFakeLink}
+                  onClick={generateLink}
                   className="rounded-2xl border-purple-300 text-purple-600 hover:bg-purple-50"
                 >
                   Novo

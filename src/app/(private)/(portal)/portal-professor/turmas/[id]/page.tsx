@@ -69,7 +69,7 @@ export default async function TurmaPage({
         <section className="grid lg:grid-cols-3 gap-6 items-start">
           {/* Invite Card */}
           <div className="lg:col-span-1">
-            <CreateInviteLinkCard />
+            <CreateInviteLinkCard idClass={id} />
           </div>
 
           {/* Quick Stats */}
