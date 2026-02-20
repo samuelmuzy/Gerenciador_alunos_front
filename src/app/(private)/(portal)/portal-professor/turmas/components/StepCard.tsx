@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { GraduationCap, BookOpen, FileText, Layers } from "lucide-react"
 import CreateWorkModal from "./modals/ReleasesModal"
 import CreateContentModal from "./modals/CreateContentModal"
+import { StepAndClass, StepAndContent } from "@/src/types/Class-student"
 
-export function StepCard({ etapa }: any) {
+export function StepCard({ etapas }: StepAndContent) {
     const [open, setOpen] = useState(false);
     const [isModalWorkOpen, setIsModalWorkOpen] = useState(false);
     const [isModalContentOpen, setIsModalContentOpen] = useState(false);
@@ -17,7 +18,7 @@ export function StepCard({ etapa }: any) {
 
     }
 
-    const handleCreateContent = () =>{
+    const handleCreateContent = () => {
 
     }
 
@@ -27,9 +28,9 @@ export function StepCard({ etapa }: any) {
                 <div className="flex justify-between items-center">
                     <div>
                         <h3 className="text-lg font-semibold text-purple-700">
-                            {etapa.nome}
+                            {etapas.id}
                         </h3>
-                        <p className="text-sm text-gray-500">{etapa.periodo}</p>
+                        <p className="text-sm text-gray-500">{String(etapas.data_inicio) + " - " + String(etapas.data_fim)}</p>
                     </div>
                     <Button
                         onClick={() => setOpen(!open)}
@@ -51,12 +52,12 @@ export function StepCard({ etapa }: any) {
                             <div>
                                 <h4 className="font-medium text-purple-600 mb-2">Conteúdos do Semestre</h4>
                                 <div className="space-y-2">
-                                    {etapa.conteudos.map((c: string, index: number) => (
+                                    {etapas.provas.map((etapa) => (
                                         <div
-                                            key={index}
+                                            key={etapa.id}
                                             className="p-3 bg-purple-50 border border-purple-100 rounded-xl text-sm"
                                         >
-                                            {c}
+                                            {etapa.nome}
                                         </div>
                                     ))}
                                 </div>
@@ -68,12 +69,12 @@ export function StepCard({ etapa }: any) {
                             <div>
                                 <h4 className="font-medium text-purple-600 mb-2">Trabalhos / Avaliações</h4>
                                 <div className="space-y-2">
-                                    {etapa.trabalhos.map((t: string, index: number) => (
+                                    {etapas.trabalhos.map((etapa) => (
                                         <div
-                                            key={index}
+                                            key={etapa.id}
                                             className="p-3 bg-white border border-purple-200 rounded-xl text-sm"
                                         >
-                                            {t}
+                                            {etapa.nome}
                                         </div>
                                     ))}
                                 </div>
