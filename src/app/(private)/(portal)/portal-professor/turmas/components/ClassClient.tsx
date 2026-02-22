@@ -6,67 +6,50 @@ import { StepCard } from "../components/StepCard";
 import CreateInviteLinkCard from "../components/CreateInviteLink";
 import { useEffect, useState } from "react";
 import { StepAndClass } from "@/src/types/Class-student";
+import { ClassAndStudent } from "@/src/types/Student";
+import { EmptyStateCard } from "@/src/components/ui/EmptyStateCard";
 
 export default function ClassClient({ id }: { id: string }) {
-    
+
 
     const [stepes, setStepes] = useState<StepAndClass | null>(null);
 
+    const [students, setStudents] = useState<ClassAndStudent | null>(null)
+
     const [error, setError] = useState('')
 
-    const alunosMock = [
-        {
-            id: 1,
-            nome: "Ana Souza",
-            email: "ana@email.com",
-            idade: 20,
-            nota: 8.5,
-        },
-        {
-            id: 2,
-            nome: "Carlos Lima",
-            email: "carlos@email.com",
-            idade: 22,
-            nota: 7.8,
-        },
-    ];
-
-    const etapasMock = [
-        {
-            id: 1,
-            nome: "1ª Etapa",
-            periodo: "Fevereiro - Abril",
-            conteudos: ["Introdução à disciplina", "Fundamentos teóricos"],
-            trabalhos: ["Trabalho 1", "Lista de Exercícios"],
-        },
-        {
-            id: 2,
-            nome: "2ª Etapa",
-            periodo: "Maio - Julho",
-            conteudos: ["Projeto prático", "Revisão geral"],
-            trabalhos: ["Projeto Final"],
-        },
-    ];
-
-    const handleGetStepes = async () => {
-        setError('');
+    const fetchData = async () => {
         try {
-            const response = await fetch(`/api/student-class/get-stepes-by-class-id/${id}`);
+            setError('');
 
-            const result = await response.json();
+            const [stepsRes, studentsRes] = await Promise.all([
+                fetch(`/api/student-class/get-stepes-by-class-id/${id}`),
+                fetch(`/api/student-class/get-all-student-by-class-id/${id}`)
+            ]);
 
-            if (!response.ok) throw new Error(result.message);
+            const stepsData = await stepsRes.json();
+            const studentsData = await studentsRes.json();
 
-            setStepes(result);
-            console.log(result)
+            if (!stepsRes.ok) throw new Error(stepsData.message);
+            if (!studentsRes.ok) throw new Error(studentsData.message);
+
+            console.log(studentsData)
+
+            setStepes(stepsData);
+            setStudents(studentsData);
+
+            
+
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Erro ao criar período.');
+            setError(error instanceof Error ? error.message : 'Erro ao buscar dados.');
         }
-    }
+    };
 
     useEffect(() => {
-        handleGetStepes();
-    }, [])
+        if (id) {
+            fetchData();
+        }
+    }, [id]);
 
     return (
         <div className="min-h-screen bg-linear-to-br from-white via-purple-50 to-purple-100 p-6 md:p-10">
@@ -100,14 +83,14 @@ export default function ClassClient({ id }: { id: string }) {
                         <div className="bg-white rounded-2xl shadow-md p-6 border border-purple-100">
                             <h3 className="text-sm text-gray-500">Total de Alunos</h3>
                             <p className="text-3xl font-bold text-purple-700 mt-2">
-                                {alunosMock.length}
+                                {students?.alunos.length}
                             </p>
                         </div>
 
                         <div className="bg-white rounded-2xl shadow-md p-6 border border-purple-100">
                             <h3 className="text-sm text-gray-500">Etapas Ativas</h3>
                             <p className="text-3xl font-bold text-purple-700 mt-2">
-                                {etapasMock.length}
+                                {stepes?.periodo.etapas.length}
                             </p>
                         </div>
                     </div>
@@ -119,11 +102,18 @@ export default function ClassClient({ id }: { id: string }) {
                         Lista de Alunos
                     </h2>
 
-                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {alunosMock.map((aluno) => (
-                            <StudentCard key={aluno.id} aluno={aluno} />
-                        ))}
-                    </div>
+                    {students?.alunos?.length === 0 ? (
+                        <EmptyStateCard
+                            title="Nenhum aluno cadastrado"
+                            description="Ainda não há alunos nesta turma. Gere um link de convite para que eles possam entrar."
+                        />
+                    ) : (
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {students?.alunos.map((aluno) => (
+                                <StudentCard key={aluno.id} aluno={aluno} />
+                            ))}
+                        </div>
+                    )}
                 </section>
 
                 {/* Steps Section */}
@@ -135,11 +125,18 @@ export default function ClassClient({ id }: { id: string }) {
                         </h2>
                     </div>
 
-                    <div className="grid gap-6">
-                        {stepes?.periodo.etapas.map((etapa) => (
-                            <StepCard key={etapa.id} etapas={etapa} />
-                        ))}
-                    </div>
+                    {stepes?.periodo?.etapas?.length === 0 ? (
+                        <EmptyStateCard
+                            title="Nenhuma etapa criada"
+                            description="Você ainda não criou etapas para este período letivo. Crie uma etapa para organizar conteúdos e trabalhos."
+                        />
+                    ) : (
+                        <div className="grid gap-6">
+                            {stepes?.periodo.etapas.map((etapa) => (
+                                <StepCard key={etapa.id} etapas={etapa} />
+                            ))}
+                        </div>
+                    )}
                 </section>
             </div>
         </div>

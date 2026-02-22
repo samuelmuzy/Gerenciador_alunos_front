@@ -7,12 +7,12 @@ export async function GET(
   try {
     const { idClass } = await context.params;
 
-    const data = await backendFetch(`/student-class/class/${idClass}/stages`);
+    const data = await backendFetch(`/student-class/${idClass}/stages`);
 
     return Response.json(data);
   } catch (error) {
     
     console.error(error);
-    return Response.json([], { status: 404 });
+    return Response.json([], { status: 200 });
   }
 }

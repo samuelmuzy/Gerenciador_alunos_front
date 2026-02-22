@@ -18,9 +18,9 @@ export function StudentCard({ aluno }: any) {
                 <div className="flex justify-between items-center">
                     <div>
                         <h2 className="text-xl font-semibold text-purple-700">
-                            {aluno.nome}
+                            {aluno.usuario.nome}
                         </h2>
-                        <p className="text-sm text-gray-500">{aluno.email}</p>
+                        <p className="text-sm text-gray-500">{aluno.usuario.email}</p>
                     </div>
                     <Button
                         onClick={() => setOpen(!open)}

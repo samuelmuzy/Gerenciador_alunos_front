@@ -4,9 +4,14 @@ import { signUpFormSchema, SignUpFormSchema } from "../../schemas/sing-up-schema
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const RegisterStudent = () => {
+
+    const searchParams = useSearchParams();
+
+    const inviteToken = searchParams.get('invite');
+
     const {
         register,
         handleSubmit,
@@ -22,7 +27,7 @@ const RegisterStudent = () => {
         setError(null);
 
         try {
-            const response = await fetch('/api/auth/register-student', {
+            const response = await fetch('/api/auth/sing-up-student', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,8 +38,10 @@ const RegisterStudent = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Login bem-sucedido
-                console.log('Login successful:', data);
+                if (inviteToken) {
+                    router.replace(`/invite/${inviteToken}/accept`)
+                    return
+                }
                 
                 //router.push('/dashboard');
             } else {
@@ -57,17 +64,7 @@ const RegisterStudent = () => {
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
-                    <div>
-                        <input
-                            placeholder="Email"
-                            type="email"
-                            {...register("email")}
-                            className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        {errors?.email && (
-                            <div className="text-red-500 text-xs">{errors?.email?.message}</div>
-                        )}
-                    </div>
+                    
                     <div>
                         <input
                             placeholder="nome"
@@ -79,6 +76,17 @@ const RegisterStudent = () => {
                             <div className="text-red-500 text-xs">
                                 {errors?.nome?.message}
                             </div>
+                        )}
+                    </div>
+                    <div>
+                        <input
+                            placeholder="Email"
+                            type="email"
+                            {...register("email")}
+                            className="w-full px-4 py-2 border text-gray-600 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors?.email && (
+                            <div className="text-red-500 text-xs">{errors?.email?.message}</div>
                         )}
                     </div>
                     <div>

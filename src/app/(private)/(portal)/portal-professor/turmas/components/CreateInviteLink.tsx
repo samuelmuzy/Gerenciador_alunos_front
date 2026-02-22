@@ -23,7 +23,6 @@ export default function CreateInviteLinkCard({ idClass }: CreateInviteLinkCardPr
 
 
   const generateLink = async () => {
-    console.log(user);
     if(!user?.id){
       throw new Error("Usuário não definido")
     }

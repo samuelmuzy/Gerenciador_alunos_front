@@ -12,13 +12,24 @@ const publicRoutes = [
   { path: "/signin-student", whenAuthorized: "redirect" },
   { path: "/", whenAuthorized: "redirect" },
   { path: "/login", whenAuthorized: "redirect" },
+  { path: "/invite/[token]", whenAuthorized: "redirect" },
 ] as const;
 
 const REDIRECT_URL_WHEN_UNAUTHORIZED = "/";
 
+
+function isPublicRoute(pathname: string) {
+  // rota dinâmica /invite/:token
+  if (pathname.startsWith("/invite/") && !pathname.endsWith("/accept")) {
+    return { path: "/invite/[token]", whenAuthorized: "redirect" as const };
+  }
+
+  return publicRoutes.find(route => route.path === pathname);
+}
+
 export const proxy = (req: NextRequest) => {
   const { pathname } = req.nextUrl;
-  const publicRoute = publicRoutes.find(route => route.path === pathname);
+  const publicRoute = isPublicRoute(pathname);
 
   const token = req.cookies.get("token")?.value;
   

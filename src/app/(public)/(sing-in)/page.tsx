@@ -1,14 +1,19 @@
 'use client'
 import SingInFormProfessor from '@/src/components/forms/SingInFormProfessor';
 import SingInFormStudent from '@/src/components/forms/SingInFormStudent';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 const SingIn = () => {
     const [formType, setFormType] = useState('student');
 
+    const searchParams = useSearchParams()
+
+    const inviteToken = searchParams.get('invite')
+
     return (
         <div>
-            {formType == 'student' && <SingInFormStudent onToggleUserType={setFormType} />}
+            {formType == 'student' && <SingInFormStudent onToggleUserType={setFormType} inviteToken={inviteToken}/>}
 
             {formType == 'professor' && <SingInFormProfessor onToggleUserType={setFormType} />}
         </div>

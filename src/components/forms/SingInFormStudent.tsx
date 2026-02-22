@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 
 interface SingInFormStudentProps {
     onToggleUserType: (userType: 'professor' | 'student') => void;
+    inviteToken: string | null
 }
 
-const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType }) => {
+const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType, inviteToken }) => {
 
     const {
         register,
@@ -29,6 +30,12 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType 
 
         try {
             await signInStudent(payload);
+
+            if (inviteToken) {
+                router.replace(`/invite/${inviteToken}/accept`)
+                return
+            }
+
             //router.push('/');
         } catch (err) {
             console.error('Network or server error:', err);
