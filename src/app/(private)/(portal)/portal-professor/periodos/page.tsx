@@ -116,12 +116,14 @@ export default function PeriodosPage() {
         quantidadeEtapas < 2
           ? [{
             id_periodo: periodo.id,
+            nome:'Etapa 1',
             nota_maxima_etapa: data.nota_maxima ?? 100,
             data_inicio: toISODateTime(data.data_inicio),
             data_fim: toISODateTime(data.data_fim),
           }]
-          : data.etapas!.map(etapa => ({
+          : data.etapas!.map((etapa,index) => ({
             id_periodo: periodo.id,
+            nome:`Etapa ${index}`,
             nota_maxima_etapa: etapa.nota_maxima_etapa,
             data_fim: toISODateTime(etapa.data_fim),
             data_inicio: toISODateTime(etapa.data_inicio),
