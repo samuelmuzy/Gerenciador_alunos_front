@@ -8,6 +8,7 @@ import { GraduationCap, BookOpen, FileText, Layers } from "lucide-react"
 import CreateWorkModal from "./modals/ReleasesModal"
 import CreateContentModal from "./modals/CreateContentModal"
 import { StepAndClass, StepAndContent } from "@/src/types/Class-student"
+import { FormatDate } from "@/src/app/_utils/FormatDate"
 
 export function StepCard({ etapas }: StepAndContent) {
     const [open, setOpen] = useState(false);
@@ -28,9 +29,9 @@ export function StepCard({ etapas }: StepAndContent) {
                 <div className="flex justify-between items-center">
                     <div>
                         <h3 className="text-lg font-semibold text-purple-700">
-                            {etapas.id}
+                            {etapas.nome}
                         </h3>
-                        <p className="text-sm text-gray-500">{String(etapas.data_inicio) + " - " + String(etapas.data_fim)}</p>
+                        <p className="text-sm text-gray-500">{FormatDate(String(etapas.data_inicio)) + " - " + FormatDate(String(etapas.data_fim))}</p>
                     </div>
                     <Button
                         onClick={() => setOpen(!open)}
