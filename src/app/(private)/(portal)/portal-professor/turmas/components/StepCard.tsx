@@ -19,9 +19,40 @@ export function StepCard({ etapas }: StepAndContent) {
 
     }
 
-    const handleCreateContent = () => {
+    const handleCreateContent = async (data: {
+        nome: string;
+        descricao: string;
+        file: File;
+    }) => {
+        try {
+            const formData = new FormData();
 
-    }
+            formData.append("nome", data.nome);
+            formData.append("descricao", data.descricao);
+            formData.append("etapa_id", String(etapas.id)); // importante
+
+            formData.append("file", data.file);
+
+            formData.append("data_liberacao", etapas.data_inicio.toISOString());
+
+            const response = await fetch(`/api/content`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Erro ao criar conteúdo");
+            }
+
+            console.log("Conteúdo criado com sucesso");
+            setIsModalContentOpen(false);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <Card className="rounded-2xl shadow-md border border-purple-200 bg-white">

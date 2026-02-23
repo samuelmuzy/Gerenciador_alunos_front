@@ -6,10 +6,14 @@ export async function backendFetch(
 ) {
   const cookieStore = await cookies();
 
+  const isFormData = options?.body instanceof FormData;
+
   const res = await fetch(`${process.env.API_URL}${path}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      // Só define JSON se NÃO for FormData
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+
       cookie: cookieStore.toString(),
       ...(options?.headers || {}),
     },
