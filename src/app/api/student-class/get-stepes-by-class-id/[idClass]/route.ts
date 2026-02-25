@@ -1,4 +1,6 @@
+import { ApiError } from "@/src/errors/api-error";
 import { backendFetch } from "@/src/services/backend.api";
+import { handleResponse } from "@/src/services/handle-response";
 
 export async function GET(
   request: Request,
@@ -9,10 +11,16 @@ export async function GET(
 
     const data = await backendFetch(`/student-class/${idClass}/stages`);
 
-    return Response.json(data);
+    const response = await handleResponse(data);
+
+    return Response.json(response);
   } catch (error) {
-    
-    console.error(error);
+    if (error instanceof ApiError) {
+      return Response.json(
+        { message: error.message },
+        { status: error.statusCode }
+      );
+    }
     return Response.json([], { status: 200 });
   }
 }

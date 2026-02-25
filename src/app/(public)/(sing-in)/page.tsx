@@ -1,6 +1,6 @@
 'use client'
-import SingInFormProfessor from '@/src/components/forms/SingInFormProfessor';
-import SingInFormStudent from '@/src/components/forms/SingInFormStudent';
+import SingInFormProfessor from '@/src/app/(public)/(sing-in)/components/forms/SingInFormProfessor';
+import SingInFormStudent from '@/src/app/(public)/(sing-in)/components/forms/SingInFormStudent';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 

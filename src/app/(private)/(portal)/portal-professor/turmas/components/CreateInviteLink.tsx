@@ -8,6 +8,9 @@ import { Link as LinkIcon, Copy, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/src/components/ui/input";
 import { useAuthStore } from "@/src/stores/auth.store";
+import { handleResponse } from "@/src/services/handle-response";
+import { Link } from "@/src/types/Link";
+import { ApiError } from "@/src/errors/api-error";
 
 interface CreateInviteLinkCardProps {
   idClass: string;
@@ -16,21 +19,21 @@ interface CreateInviteLinkCardProps {
 export default function CreateInviteLinkCard({ idClass }: CreateInviteLinkCardProps) {
   const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-  const [error,setError] = useState('');
+  const [error, setError] = useState('');
 
   const { user } = useAuthStore();
 
 
 
   const generateLink = async () => {
-    if(!user?.id){
+    if (!user?.id) {
       throw new Error("Usuário não definido")
     }
 
     try {
       const data = {
-          idClass: idClass,
-          idProfessor:user.id
+        idClass: idClass,
+        idProfessor: user.id
       }
       const res = await fetch(`/api/student-class/generate-invite-link`, {
         method: 'POST',
@@ -39,16 +42,17 @@ export default function CreateInviteLinkCard({ idClass }: CreateInviteLinkCardPr
         credentials: 'include',
       })
 
-      const result = await res.json()
-
-      if (!res.ok) throw new Error(result.message || 'Erro ao gerar link.')
-
+      const result = await handleResponse<Link>(res);
 
       setInviteLink(result.link);
       setIsCopied(false);
     } catch (error) {
-      console.log(error)
-      setError(error instanceof Error ? error.message : 'Erro ao gerar link.')
+      // ✅ tudo tratado em um único lugar
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro inesperado.");
+      }
     }
   };
 

@@ -5,14 +5,16 @@ import { ReleasesSection } from "../components/ReleasesSection";
 import { StepCard } from "../components/StepCard";
 import CreateInviteLinkCard from "../components/CreateInviteLink";
 import { useEffect, useState } from "react";
-import { StepAndClass } from "@/src/types/Class-student";
+import { StepAndClass, StepAndContent } from "@/src/types/Class-student";
 import { ClassAndStudent } from "@/src/types/Student";
 import { EmptyStateCard } from "@/src/components/ui/EmptyStateCard";
+import { handleResponse } from "@/src/services/handle-response";
+import { ApiError } from "@/src/errors/api-error";
 
 export default function ClassClient({ id }: { id: string }) {
 
 
-    const [stepes, setStepes] = useState<StepAndClass | null>(null);
+    const [stepes, setStepes] = useState<StepAndClass[] | null>(null);
 
     const [students, setStudents] = useState<ClassAndStudent | null>(null)
 
@@ -27,21 +29,24 @@ export default function ClassClient({ id }: { id: string }) {
                 fetch(`/api/student-class/get-all-student-by-class-id/${id}`)
             ]);
 
-            const stepsData = await stepsRes.json();
-            const studentsData = await studentsRes.json();
+            const stepsData = await handleResponse<StepAndClass[]>(stepsRes);
+            const studentsData = await handleResponse<ClassAndStudent>(studentsRes);
 
-            if (!stepsRes.ok) throw new Error(stepsData.message);
-            if (!studentsRes.ok) throw new Error(studentsData.message);
 
             console.log(studentsData)
+            console.log(stepsData)
 
             setStepes(stepsData);
             setStudents(studentsData);
 
-            
+
 
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Erro ao buscar dados.');
+            if (error instanceof ApiError) {
+                setError(error.message);
+            } else {
+                setError("Erro inesperado.");
+            }
         }
     };
 
@@ -90,7 +95,7 @@ export default function ClassClient({ id }: { id: string }) {
                         <div className="bg-white rounded-2xl shadow-md p-6 border border-purple-100">
                             <h3 className="text-sm text-gray-500">Etapas Ativas</h3>
                             <p className="text-3xl font-bold text-purple-700 mt-2">
-                                {stepes?.periodo.etapas.length}
+                                {stepes?.length}
                             </p>
                         </div>
                     </div>
@@ -125,15 +130,15 @@ export default function ClassClient({ id }: { id: string }) {
                         </h2>
                     </div>
 
-                    {stepes?.periodo?.etapas?.length === 0 ? (
+                    {stepes?.length === 0 ? (
                         <EmptyStateCard
                             title="Nenhuma etapa criada"
                             description="Você ainda não criou etapas para este período letivo. Crie uma etapa para organizar conteúdos e trabalhos."
                         />
                     ) : (
                         <div className="grid gap-6">
-                            {stepes?.periodo.etapas.map((etapa) => (
-                                <StepCard key={etapa.id} etapas={etapa} />
+                            {stepes?.map((etapa) => (
+                                <StepCard key={etapa.id} step={etapa} />
                             ))}
                         </div>
                     )}

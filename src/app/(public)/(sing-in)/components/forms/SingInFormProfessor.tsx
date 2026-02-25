@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInFormSchema, SignInFormSchema } from '@/src/app/schemas/sing-in-schema';
 import { useAuth } from '@/src/hooks/useAuth';
+import { ApiError } from '@/src/errors/api-error';
 
 
 interface SingInFormProfessorProps {
@@ -32,9 +33,12 @@ const SingInFormProfessor: React.FC<SingInFormProfessorProps> = ({ onToggleUserT
             await signInProfessor(payload);
             router.push('/portal-professor');
 
-        } catch (err) {
-            console.error('Network or server error:', err);
-            setError('An unexpected error occurred.');
+        } catch (error) {
+            if (error instanceof ApiError) {
+                setError(error.message); // "Email já existe"
+            } else {
+                setError("Erro inesperado.");
+            }
         }
     };
 

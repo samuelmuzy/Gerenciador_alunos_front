@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { ModalCreateClass } from '@/src/components/modals/ModalCreateClass'
+import { ModalCreateClass } from '@/src/app/(private)/(portal)/portal-professor/turmas/components/modals/ModalCreateClass'
 import { ClassStudent } from '@/src/types/Class-student'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'

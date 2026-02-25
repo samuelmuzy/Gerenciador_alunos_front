@@ -1,5 +1,7 @@
 import { SignInFormSchema } from "../app/schemas/sing-in-schema"
+import { handleResponse } from "../services/handle-response"
 import { useAuthStore } from "../stores/auth.store"
+import { User } from "../types/User"
 
 export function useAuth() {
     const { login, logout } = useAuthStore()
@@ -19,13 +21,9 @@ export function useAuth() {
         body: JSON.stringify(payload),
       })
   
-      const data = await response.json()
+      const data = await handleResponse<User>(response)
   
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro ao autenticar')
-      }
-  
-      login(data.user)
+      login(data)
       return data
     }
   

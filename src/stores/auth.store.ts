@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { User } from '../types/User'
+import { handleResponse } from '../services/handle-response'
 
 
 export interface AuthState {
@@ -25,12 +26,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       user: null,
       isAuthenticated: false,
     }),
+
   loadUser: async () => {
     try {
       const res = await fetch('/api/auth/me')
+      const data = await res.json()
+      
       if (!res.ok) throw new Error()
 
-      const data = await res.json()
       set({
         user: data,
         isAuthenticated: true,

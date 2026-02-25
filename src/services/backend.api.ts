@@ -21,9 +21,5 @@ export async function backendFetch(
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error("Erro na API");
-  }
-
-  return res.json();
+  return res;
 }

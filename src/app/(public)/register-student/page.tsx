@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { handleResponse } from "@/src/services/handle-response";
+import { ApiError } from "@/src/errors/api-error";
 
 const RegisterStudent = () => {
 
@@ -35,23 +37,22 @@ const RegisterStudent = () => {
                 body: JSON.stringify(payload),
             });
 
-            const data = await response.json();
+            const data = await handleResponse(response);
 
-            if (response.ok) {
-                if (inviteToken) {
-                    router.replace(`/invite/${inviteToken}/accept`)
-                    return
-                }
-                
-                //router.push('/dashboard');
-            } else {
-                // Login falhou
-                setError(data.message || 'Login failed');
-                console.error('Login failed:', data);
+
+            if (inviteToken) {
+                router.replace(`/invite/${inviteToken}/accept`)
+                return
             }
-        } catch (err) {
-            console.error('Network or server error:', err);
-            setError('An unexpected error occurred.');
+
+            //router.push('/dashboard');
+
+        } catch (error) {
+            if (error instanceof ApiError) {
+                setError(error.message); // "Email já existe"
+            } else {
+                setError("Erro inesperado.");
+            }
         }
     };
 
@@ -64,7 +65,7 @@ const RegisterStudent = () => {
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
-                    
+
                     <div>
                         <input
                             placeholder="nome"

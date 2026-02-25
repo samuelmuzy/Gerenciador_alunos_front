@@ -10,6 +10,8 @@ import { Periodus } from "@/src/types/Periodus"
 import { PeriodList } from './components/PeriodList'
 import { PeriodForm } from './components/PeriodForm'
 import { toISODateTime } from '@/src/app/_utils/Date'
+import { handleResponse } from '@/src/services/handle-response'
+import { ApiError } from '@/src/errors/api-error'
 
 export default function PeriodsPage() {
   const [periods, setPeriods] = useState<Periodus[]>([])
@@ -28,11 +30,17 @@ export default function PeriodsPage() {
   const fetchPeriods = useCallback(async () => {
     try {
       setIsLoading(true)
-      const res = await fetch('/api/periodos', { credentials: 'include' })
-      const data = await res.json()
+      const res = await fetch('/api/periodos')
+
+      const data = await handleResponse(res);
+
       setPeriods(Array.isArray(data) ? data : [])
-    } catch {
-      setPeriods([])
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setPeriods([])
+      }
     } finally {
       setIsLoading(false)
     }
@@ -43,6 +51,7 @@ export default function PeriodsPage() {
   }, [fetchPeriods])
 
   const createPeriod = async (data: CreatePeriodusRegularSchema) => {
+
     const res = await fetch('/api/periodos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,12 +61,12 @@ export default function PeriodsPage() {
         data_inicio: data.data_inicio,
         data_fim: data.data_fim,
         nota_corte: data.nota_corte,
-      }),
-      credentials: 'include',
+      })
     })
-    const result = await res.json()
-    if (!res.ok) throw new Error(result.message || 'Failed to create period.')
-    return result
+
+    const result = await handleResponse<Periodus>(res);
+
+    return result;
   }
 
   const createSteps = async (data: CreatePeriodusRegularSchema) => {
@@ -67,42 +76,54 @@ export default function PeriodsPage() {
       body: JSON.stringify(data.etapas),
       credentials: 'include',
     })
-    const result = await res.json()
-    if (!res.ok) throw new Error(result.message || 'Failed to create step.')
+
+    const result = await handleResponse(res)
+
+    return result;
   }
 
   const onSubmit = async (data: CreatePeriodusRegularSchema) => {
     setIsSubmitting(true)
     setError(null)
     try {
-      const period = await createPeriod(data)
+      const period = await createPeriod(data);
+
+      if (!period) {
+        throw new Error("Periodo invalido")
+      }
+
       const stepCount = data.quantidade_etapas ?? 1
 
       const steps =
         stepCount < 2
           ? [{
-              id_periodo: period.id,
-              nome: 'Step 1',
-              nota_maxima_etapa: data.nota_maxima ?? 100,
-              data_inicio: toISODateTime(data.data_inicio),
-              data_fim: toISODateTime(data.data_fim),
-            }]
+            id_periodo: period.id,
+            nome: 'Step 1',
+            nota_maxima_etapa: data.nota_maxima ?? 100,
+            data_inicio: toISODateTime(data.data_inicio),
+            data_fim: toISODateTime(data.data_fim),
+          }]
           : data.etapas!.map((step, index) => ({
-              id_periodo: period.id,
-              nome: `Step ${index + 1}`,
-              nota_maxima_etapa: step.nota_maxima_etapa,
-              data_inicio: toISODateTime(step.data_inicio),
-              data_fim: toISODateTime(step.data_fim),
-            }))
+            id_periodo: period.id,
+            nome: `Step ${index + 1}`,
+            nota_maxima_etapa: step.nota_maxima_etapa,
+            data_inicio: toISODateTime(step.data_inicio),
+            data_fim: toISODateTime(step.data_fim),
+          }))
 
       await createSteps({ ...data, etapas: steps })
       reset()
       setShowForm(false)
       await fetchPeriods()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create period.')
+    } catch (error) {
+      // tudo tratado em um único lugar
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Erro inesperado.");
+      }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 

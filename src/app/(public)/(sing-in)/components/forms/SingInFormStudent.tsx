@@ -1,4 +1,5 @@
 import { SignInFormSchema, signInFormSchema, } from "@/src/app/schemas/sing-in-schema";
+import { ApiError } from "@/src/errors/api-error";
 import { useAuth } from "@/src/hooks/useAuth";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,9 +38,12 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType,
             }
 
             //router.push('/');
-        } catch (err) {
-            console.error('Network or server error:', err);
-            setError('An unexpected error occurred.');
+        } catch (error) {
+            if (error instanceof ApiError) {
+                setError(error.message); // "Email já existe"
+            } else {
+                setError("Erro inesperado.");
+            }
         }
     };
 

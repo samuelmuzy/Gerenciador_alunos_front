@@ -1,7 +1,9 @@
 'use client'
 
+import { ChevronLeft, ChevronRight, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 const menuItems = [
   {
@@ -54,33 +56,71 @@ const menuItems = [
 
 export function SideBarPortalProfessor() {
   const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <aside className="flex h-[calc(100vh-4rem)] w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
-      <nav className="flex flex-1 flex-col gap-1 p-4">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                isActive
+    <>
+      {/* Botão mobile */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="fixed left-4 top-4 z-50 rounded-lg bg-white p-2 shadow-md md:hidden"
+      >
+        <Menu className="h-5 w-5 text-slate-600" />
+      </button>
+
+      {/* Overlay mobile */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+        sticky top-16 z-50 flex h-[calc(100vh-4rem)] flex-col border-r border-slate-200 bg-white transition-all duration-300
+        md:translate-x-0
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${collapsed ? 'w-24' : 'w-64'}
+      `}>
+        {/* Botão collapse (desktop) */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="absolute -right-3 top-6 hidden h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm md:flex"
+        >
+          {collapsed
+            ? <ChevronRight className="h-4 w-4 text-slate-500" />
+            : <ChevronLeft className="h-4 w-4 text-slate-500" />
+          }
+        </button>
+
+        <nav className="flex flex-1 flex-col gap-1 p-4">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center ${collapsed && 'justify-center' } gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${isActive
                   ? 'bg-indigo-50 text-indigo-700'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              <span
-                className={isActive ? 'text-indigo-600' : 'text-slate-400'}
-                aria-hidden
+                  }`}
               >
-                {item.icon}
-              </span>
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
-    </aside>
+                <span className={`shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} aria-hidden>
+                  {item.icon}
+                </span>
+                {/* Label some quando collapsed */}
+                {!collapsed && (
+                  <span className="truncate">{item.label}</span>
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+      </aside>
+    </>
   )
 }

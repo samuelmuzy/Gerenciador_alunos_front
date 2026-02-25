@@ -8,43 +8,40 @@ export type ClassStudent = {
 }
 
 export type StepAndClass = {
-  id_periodo: string;
   id: string;
   nome: string;
-
-  periodo: {
+  data_inicio: Date;
+  data_fim: Date;
+  nota_maxima_etapa: number;
+  id_periodo: string;
+  provas: {
+    id: string;
+    nome: string;
+    valor: number;
+    id_etapa: string;
+  }[]
+  trabalhos: {
+    id: string;
+    nome: string;
+    valor: number;
+    id_etapa: string;
+  }[]
+  conteudos: {
     id: string;
     nome: string;
     descricao: string;
-    nota_corte: number;
-    id_periodo_regular: string | null;
+    url_documento:string
+    data_liberacao: Date;
+    public_id:string;
+    id_etapa: string;
+  }[]
 
-    etapas: {
-      id: string;
-      data_inicio: Date;
-      data_fim: Date;
-      nota_maxima_etapa: number;
-      id_periodo: string;
-      provas: {
-        id: string;
-        nome: string;
-        valor: number;
-        id_etapa: string;
-      }[]
-      trabalhos: {
-        id: string;
-        nome: string;
-        valor: number;
-        id_etapa: string;
-      }[]
-    }[];
-  };
 }
 
 export type StepAndContent = {
-  etapas: {
+  step: {
     id: string;
-    nome:string;
+    nome: string;
     data_inicio: Date;
     data_fim: Date;
     nota_maxima_etapa: number;
@@ -61,5 +58,15 @@ export type StepAndContent = {
       valor: number;
       id_etapa: string;
     }[]
-  };
+    conteudos: {
+      id: string;
+      nome: string;
+      descricao: string;
+      url_documento:string
+      public_id:string;
+      data_liberacao: Date;
+      id_etapa: string;
+    }[]
+
+  }
 }
