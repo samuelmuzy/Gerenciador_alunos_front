@@ -2,76 +2,71 @@
 
 import { useState } from "react"
 import { Card, CardContent } from "@/src/components/ui/card"
-import { Button } from "@/src/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  FileText, ExternalLink, Calendar, BookOpen,
+  Calendar, BookOpen,
   ClipboardList, ChevronDown, Plus, Award, Hash
 } from "lucide-react"
-import CreateWorkModal from "./modals/ReleasesModal"
+import CreateWorkModal from "./modals/CreateWorkModal"
 import CreateContentModal from "./modals/CreateContentModal"
-import { StepAndContent } from "@/src/types/Class-student"
+import { StepAndClass, StepAndContent } from "@/src/types/Class-student"
 import { FormatDate } from "@/src/app/_utils/FormatDate"
 import { ApiError } from "@/src/errors/api-error"
 import { handleResponse } from "@/src/services/handle-response"
+import { EmptyState } from "./ui/EmptyState"
+import { DocBadge } from "./ui/DocBadge"
+import { ScoreBadge } from "./ui/ScoreBadge"
+import { WorkFormSchema } from "@/src/app/schemas/create-work-schema"
+import { Work } from "@/src/types/Work"
+import { Content } from "@/src/types/Content"
 
-function DocBadge({ nome, descricao, url_documento, data_liberacao }: {
-  nome: string
-  descricao: string
-  url_documento: string
-  data_liberacao: Date
-}) {
-  return (
-    <a
-      href={url_documento}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 hover:border-purple-200 hover:shadow-md hover:shadow-purple-50 transition-all duration-200 cursor-pointer"
-    >
-      <div className="shrink-0 w-9 h-9 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
-        <FileText className="w-4 h-4 text-purple-500" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-slate-700 truncate group-hover:text-purple-700 transition-colors">
-            {nome}
-          </p>
-          <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-purple-400 flex-shrink-0 transition-colors" />
-        </div>
-        <p className="text-xs text-slate-400 mt-0.5 truncate">{descricao}</p>
-        <div className="flex items-center gap-1 mt-1.5">
-          <Calendar className="w-3 h-3 text-slate-300" />
-          <span className="text-[11px] text-slate-400">{FormatDate(String(data_liberacao))}</span>
-        </div>
-      </div>
-    </a>
-  )
+interface StepCardProps {
+  step: StepAndContent["step"]; // ou o tipo correto do `step`
+  setSteps: React.Dispatch<React.SetStateAction<StepAndClass[] | null>>;
 }
 
-function ScoreBadge({ value }: { value: number }) {
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600 text-xs font-semibold">
-      <Award className="w-3 h-3" />
-      {value} pts
-    </span>
-  )
-}
 
-function EmptyState({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/60">
-      <p className="text-xs text-slate-400 font-medium">{label}</p>
-    </div>
-  )
-}
 
-export function StepCard({ step }: StepAndContent) {
+export function StepCard({ step, setSteps }: StepCardProps) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<"conteudos" | "provas" | "trabalhos">("conteudos")
   const [isModalWorkOpen, setIsModalWorkOpen] = useState(false)
   const [isModalContentOpen, setIsModalContentOpen] = useState(false)
 
-  const onSubmit = () => { }
+  const onSubmit = async (data: WorkFormSchema) => {
+    try {
+
+      const response = await fetch('/api/work', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: data.description,
+          tipo: 'work',
+          valor: Number(data.value),
+          data_inicio: new Date(data.startDate),
+          data_fim: new Date(data.endDate),
+          id_etapa: step.id,
+        })
+      });
+
+      const createdWork = await handleResponse<Work>(response)
+
+      setSteps((prev) =>
+        prev
+          ? prev.map((s) =>
+            s.id === step.id
+              ? { ...s, trabalhos: [...s.trabalhos, createdWork] }
+              : s
+          )
+          : prev
+      );
+
+      setIsModalWorkOpen(false)
+    } catch (error) {
+      if (error instanceof ApiError) console.error(error.message)
+      else console.error("Erro inesperado.")
+    }
+  }
 
   const handleCreateContent = async (data: {
     nome: string
@@ -87,7 +82,19 @@ export function StepCard({ step }: StepAndContent) {
       formData.append("data_liberacao", new Date(step.data_inicio).toISOString())
 
       const response = await fetch(`/api/content`, { method: "POST", body: formData })
-      await handleResponse(response)
+
+      const createdContent = await handleResponse<Content>(response)
+
+      setSteps((prev) => {
+        if (!prev) return prev;
+        return prev.map((s) =>
+          s.id === step.id
+            ? { ...s, conteudos: [...s.conteudos, createdContent] }
+            : s
+        )
+      }
+      );
+
       setIsModalContentOpen(false)
     } catch (error) {
       if (error instanceof ApiError) console.error(error.message)

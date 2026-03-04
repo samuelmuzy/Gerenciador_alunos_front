@@ -138,7 +138,7 @@ export default function ClassClient({ id }: { id: string }) {
                     ) : (
                         <div className="grid gap-6">
                             {stepes?.map((etapa) => (
-                                <StepCard key={etapa.id} step={etapa} />
+                                <StepCard key={etapa.id} step={etapa} setSteps={setStepes}   />
                             ))}
                         </div>
                     )}
