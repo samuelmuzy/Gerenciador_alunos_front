@@ -47,7 +47,7 @@ export default function CreateInviteLinkCard({ idClass }: CreateInviteLinkCardPr
       setInviteLink(result.link);
       setIsCopied(false);
     } catch (error) {
-      // ✅ tudo tratado em um único lugar
+      
       if (error instanceof ApiError) {
         setError(error.message);
       } else {
