@@ -43,7 +43,7 @@ export default function AcceptClient({ token }: InviteProps) {
                 return
             }
 
-            router.push('/dashboard')
+            router.push('/portal-aluno')
         } catch {
             alert('Erro inesperado')
             setSubmitting(false)

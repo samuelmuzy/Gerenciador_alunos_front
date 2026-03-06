@@ -15,7 +15,7 @@ interface InviteProps {
 
 export default function InviteClient({token}:InviteProps){
 
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated,user } = useAuthStore();
 
     const router = useRouter()
     const [loading, setLoading] = useState(true)
@@ -24,7 +24,7 @@ export default function InviteClient({token}:InviteProps){
     useEffect(() => {
         async function init() {
             try {
-                console.log(isAuthenticated)
+                
                 // Se já estiver logado, vai direto para confirmar entrada
                 if (isAuthenticated) {
 

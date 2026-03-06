@@ -37,7 +37,7 @@ const SingInFormStudent: React.FC<SingInFormStudentProps> = ({ onToggleUserType,
                 return
             }
 
-            //router.push('/');
+            router.push('/portal-aluno');
         } catch (error) {
             if (error instanceof ApiError) {
                 setError(error.message); // "Email já existe"

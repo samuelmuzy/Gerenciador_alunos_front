@@ -45,7 +45,7 @@ const RegisterStudent = () => {
                 return
             }
 
-            //router.push('/dashboard');
+            router.push('/portal-aluno');
 
         } catch (error) {
             if (error instanceof ApiError) {
