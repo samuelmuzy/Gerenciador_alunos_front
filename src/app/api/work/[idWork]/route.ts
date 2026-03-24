@@ -2,15 +2,17 @@ import { ApiError } from "@/src/errors/api-error";
 import { backendFetch } from "@/src/services/backend.api";
 import { handleResponse } from "@/src/services/handle-response";
 
-export async function POST(req: Request) {
+export async function GET(
+    request: Request,
+    context: { params: Promise<{ idWork: string }> }
+  ) {
     try {
-      const body = await req.json();
-      const data = await backendFetch("/work", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
+      const { idWork } = await context.params;
+  
+      const data = await backendFetch(`/work/${idWork}`);
   
       const response = await handleResponse(data);
+      console.log(response)
   
       return Response.json(response);
     } catch (error) {
@@ -20,6 +22,7 @@ export async function POST(req: Request) {
           { status: error.statusCode }
         );
       }
-      return Response.json({ message: "Erro interno." }, { status: 502 });
+      return Response.json([], { status: 200 });
     }
   }
+  
