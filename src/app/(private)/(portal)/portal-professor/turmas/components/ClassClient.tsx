@@ -88,7 +88,7 @@ export default function ClassClient({ id }: { id: string }) {
                         <div className="bg-white rounded-2xl shadow-md p-6 border border-purple-100">
                             <h3 className="text-sm text-gray-500">Total de Alunos</h3>
                             <p className="text-3xl font-bold text-purple-700 mt-2">
-                                {students?.alunos.length}
+                                {students?.alunosTurmas?.length ?? 0}
                             </p>
                         </div>
 
@@ -107,15 +107,15 @@ export default function ClassClient({ id }: { id: string }) {
                         Lista de Alunos
                     </h2>
 
-                    {students?.alunos?.length === 0 ? (
+                    {(students?.alunosTurmas?.length ?? 0) === 0 ? (
                         <EmptyStateCard
                             title="Nenhum aluno cadastrado"
                             description="Ainda não há alunos nesta turma. Gere um link de convite para que eles possam entrar."
                         />
                     ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {students?.alunos.map((aluno) => (
-                                <StudentCard key={aluno.id} aluno={aluno} />
+                            {students?.alunosTurmas?.map(({ aluno }) => (
+                                <StudentCard href={`portal-professor/turmas/${id}/aluno/${aluno.id}`} key={aluno.id} aluno={aluno} />
                             ))}
                         </div>
                     )}

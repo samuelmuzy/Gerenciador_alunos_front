@@ -3,12 +3,14 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/src/components/ui/card"
 import { Button } from "@/src/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 
+interface StudentCardProps {
+    href:string,
+    aluno:any
+}
 
-
-
-export function StudentCard({ aluno }: any) {
+export function StudentCard({ aluno,href }: StudentCardProps) {
     const [open, setOpen] = useState(false)
 
 
@@ -22,28 +24,14 @@ export function StudentCard({ aluno }: any) {
                         </h2>
                         <p className="text-sm text-gray-500">{aluno.usuario.email}</p>
                     </div>
-                    <Button
-                        onClick={() => setOpen(!open)}
+                    <Link
+                        href={href}
                         className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
                     >
-                        {open ? "Fechar" : "Ver mais"}
-                    </Button>
+                        Ver mais
+                    </Link>
                 </div>
 
-
-                <AnimatePresence>
-                    {open && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="mt-4 text-gray-700"
-                        >
-                            <p><strong>Idade:</strong> {aluno.idade}</p>
-                            <p><strong>Média:</strong> {aluno.nota}</p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </CardContent>
         </Card>
     )
