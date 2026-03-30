@@ -1,16 +1,22 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { ModalCreateClass } from '@/src/app/(private)/(portal)/portal-professor/turmas/components/modals/ModalCreateClass'
+
 import { ClassStudent } from '@/src/types/Class-student'
-import { useRouter } from 'next/navigation'
+import { handleResponse } from '@/src/services/handle-response'
+import { ApiError } from '@/src/errors/api-error'
 import Link from 'next/link'
+import { ModalCreateClass } from './components/modals/ModalCreateClass'
+import { ModalDeleteClass } from './components/modals/ModalDeleteClass'
 
 export default function TurmasPage() {
   const [turmas, setTurmas] = useState<ClassStudent[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const router = useRouter();
+  // delete state
+  const [deleteTarget, setDeleteTarget] = useState<ClassStudent | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const fetchClasses = useCallback(async () => {
     setLoading(true)
@@ -30,6 +36,36 @@ export default function TurmasPage() {
   useEffect(() => {
     fetchClasses()
   }, [fetchClasses])
+
+  function openDeleteModal(turma: ClassStudent) {
+    setDeleteError(null)
+    setDeleteTarget(turma)
+  }
+
+  function closeDeleteModal() {
+    if (isDeleting) return
+    setDeleteTarget(null)
+    setDeleteError(null)
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return
+    setIsDeleting(true)
+    setDeleteError(null)
+    try {
+      const res = await fetch(`/api/student-class/${deleteTarget.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+      await handleResponse(res)
+      setDeleteTarget(null)
+      await fetchClasses()
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : 'Erro ao excluir turma.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <div className="px-4 py-8 sm:px-6 lg:px-8">
@@ -87,6 +123,9 @@ export default function TurmasPage() {
                   <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
                     Período
                   </th>
+                  <th scope="col" className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-slate-500">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
@@ -98,8 +137,25 @@ export default function TurmasPage() {
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
                       {turma.periodo?.nome ?? turma.id_periodo}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
-                      <Link href={`/portal-professor/turmas/${turma.id}`} className='mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700'>Gerenciar Turma</Link>
+                    <td className="whitespace-nowrap px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/portal-professor/turmas/${turma.id}`}
+                          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+                        >
+                          Gerenciar
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => openDeleteModal(turma)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
+                            <path fillRule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5A.75.75 0 0 1 9.95 6Z" clipRule="evenodd" />
+                          </svg>
+                          Excluir
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -107,12 +163,25 @@ export default function TurmasPage() {
             </table>
           )}
         </div>
+
+        {/* Inline delete error (fallback case) */}
+        {deleteError && !deleteTarget && (
+          <p className="mt-3 text-sm text-red-600">{deleteError}</p>
+        )}
       </div>
 
       <ModalCreateClass
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={fetchClasses}
+      />
+
+      <ModalDeleteClass
+        isOpen={!!deleteTarget}
+        className={deleteTarget?.nome ?? ''}
+        isDeleting={isDeleting}
+        onClose={closeDeleteModal}
+        onConfirm={handleDelete}
       />
     </div>
   )

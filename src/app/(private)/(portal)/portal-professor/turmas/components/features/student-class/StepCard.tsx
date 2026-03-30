@@ -7,18 +7,21 @@ import {
   Calendar, BookOpen,
   ClipboardList, ChevronDown, Plus, Award, Hash
 } from "lucide-react"
-import CreateWorkModal from "./modals/CreateWorkModal"
-import CreateContentModal from "./modals/CreateContentModal"
+
 import { StepAndClass, StepAndContent } from "@/src/types/Class-student"
 import { FormatDate } from "@/src/app/_utils/FormatDate"
 import { ApiError } from "@/src/errors/api-error"
 import { handleResponse } from "@/src/services/handle-response"
-import { EmptyState } from "./ui/EmptyState"
-import { DocBadge } from "./ui/DocBadge"
-import { ScoreBadge } from "./ui/ScoreBadge"
+
+
 import { WorkFormSchema } from "@/src/app/schemas/create-work-schema"
 import { Work } from "@/src/types/Work"
 import { Content } from "@/src/types/Content"
+import { DocBadge } from "../../ui/atoms/DocBadge"
+import { ScoreBadge } from "../../ui/atoms/ScoreBadge"
+import CreateWorkModal from "../../modals/CreateWorkModal"
+import CreateContentModal from "../../modals/CreateContentModal"
+import { EmptyState } from "../../ui/molecules/EmptyState"
 
 interface StepCardProps {
   step: StepAndContent["step"]; // ou o tipo correto do `step`

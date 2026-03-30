@@ -1,15 +1,16 @@
 'use client'
 import { GraduationCap, Layers } from "lucide-react";
-import { StudentCard } from "../components/StudentCard";
-import { ReleasesSection } from "../components/ReleasesSection";
-import { StepCard } from "../components/StepCard";
-import CreateInviteLinkCard from "../components/CreateInviteLink";
+import { StudentCard } from "../../ui/StudentCard";
+
+
+import CreateInviteLinkCard from "./CreateInviteLink";
 import { useEffect, useState } from "react";
 import { StepAndClass, StepAndContent } from "@/src/types/Class-student";
 import { ClassAndStudent } from "@/src/types/Student";
 import { EmptyStateCard } from "@/src/components/ui/EmptyStateCard";
 import { handleResponse } from "@/src/services/handle-response";
 import { ApiError } from "@/src/errors/api-error";
+import { StepCard } from "./StepCard";
 
 export default function ClassClient({ id }: { id: string }) {
 
@@ -115,7 +116,7 @@ export default function ClassClient({ id }: { id: string }) {
                     ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {students?.alunosTurmas?.map(({ aluno }) => (
-                                <StudentCard href={`portal-professor/turmas/${id}/aluno/${aluno.id}`} key={aluno.id} aluno={aluno} />
+                                <StudentCard href={`${id}/alunos/${aluno.id}/submissoes`} key={aluno.id} aluno={aluno} />
                             ))}
                         </div>
                     )}

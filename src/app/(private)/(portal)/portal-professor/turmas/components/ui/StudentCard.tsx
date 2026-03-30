@@ -26,7 +26,7 @@ export function StudentCard({ aluno,href }: StudentCardProps) {
                     </div>
                     <Link
                         href={href}
-                        className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
+                        className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl p-2"
                     >
                         Ver mais
                     </Link>

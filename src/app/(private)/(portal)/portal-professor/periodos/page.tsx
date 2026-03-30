@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { CreatePeriodusRegularSchema, createPeriodusRegularSchema } from "@/src/app/schemas/create-periodus-schema"
 import { Periodus } from "@/src/types/Periodus"
 
-
 import { PeriodList } from './components/PeriodList'
 import { PeriodForm } from './components/PeriodForm'
 import { toISODateTime } from '@/src/app/_utils/Date'
@@ -89,7 +88,7 @@ export default function PeriodsPage() {
       const period = await createPeriod(data);
 
       if (!period) {
-        throw new Error("Periodo invalido")
+        throw new Error("Período inválido")
       }
 
       const stepCount = data.quantidade_etapas ?? 1
@@ -98,14 +97,14 @@ export default function PeriodsPage() {
         stepCount < 2
           ? [{
             id_periodo: period.id,
-            nome: 'Step 1',
+            nome: 'Etapa 1',
             nota_maxima_etapa: data.nota_maxima ?? 100,
             data_inicio: toISODateTime(data.data_inicio),
             data_fim: toISODateTime(data.data_fim),
           }]
           : data.etapas!.map((step, index) => ({
             id_periodo: period.id,
-            nome: `Step ${index + 1}`,
+            nome: `Etapa ${index + 1}`,
             nota_maxima_etapa: step.nota_maxima_etapa,
             data_inicio: toISODateTime(step.data_inicio),
             data_fim: toISODateTime(step.data_fim),
@@ -116,7 +115,6 @@ export default function PeriodsPage() {
       setShowForm(false)
       await fetchPeriods()
     } catch (error) {
-      // tudo tratado em um único lugar
       if (error instanceof ApiError) {
         setError(error.message);
       } else {
@@ -138,8 +136,8 @@ export default function PeriodsPage() {
   return (
     <div className="px-4 py-8 sm:px-6 lg:px-8">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Academic Periods</h1>
-        <p className="mt-2 text-slate-600">Manage your academic periods and their steps.</p>
+        <h1 className="text-2xl font-semibold text-slate-900">Períodos Acadêmicos</h1>
+        <p className="mt-2 text-slate-600">Gerencie seus períodos acadêmicos e suas etapas.</p>
       </header>
 
       {isLoading ? (
@@ -148,13 +146,13 @@ export default function PeriodsPage() {
         <>
           {!shouldShowForm && (
             <div className="mt-6 space-y-4">
-              <p className="text-slate-600">{periods.length} period(s) registered.</p>
+              <p className="text-slate-600">{periods.length} período(s) cadastrados.</p>
               <button
                 type="button"
                 onClick={() => setShowForm(true)}
                 className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                + Create academic period
+                + Criar período acadêmico
               </button>
             </div>
           )}
@@ -171,7 +169,7 @@ export default function PeriodsPage() {
           )}
 
           {!isLoading && periods.length > 0 && !showForm && (
-            <PeriodList periods={periods} />
+            <PeriodList periods={periods} onDeleted={fetchPeriods} />
           )}
         </>
       )}
@@ -186,7 +184,7 @@ function LoadingState() {
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
       </svg>
-      <span className="text-sm">Loading periods...</span>
+      <span className="text-sm">Carregando períodos...</span>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import ClassClient from "../components/ClassClient";
+import ClassClient from "../components/features/student-class/ClassClient";
 
 
 export default async function TurmaPage({ params, }: { params: Promise<{ id: string }>; }) { 
